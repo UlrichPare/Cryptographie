@@ -1,0 +1,73 @@
+
+/////Prise en main/////
+
+1/ Cette topologie s'appelle la topologie serveur-client
+
+2/ Grace au serveur via lequel les deux clients se sont connectés, on 
+remarque dans les logs que toutes les informations envoyés par ceux-ci 
+sont enregistré dans le serveur. De plus cest lui qui relaye l'info. Par exemple quand le 
+client 1 envoie un message au client 2, le serveur recoit le message dabord puis l'envoie 
+au client concerné qui est donc le client 2
+
+3/ Cependant le serveur relaye l'information mais voit aussi les messages envoyé 
+d'un client a l'autre ce qui n'est pas censé etre le cas comme on le voit dans des
+ applications de messagerie comme whatsapp. Il viole le principe de confidentialité
+
+4/ La solution la plus simple selon moi serait de chiffrer donc les données d'un
+ client a un autre. On gardera la confirmation d'envoie et de reception du message
+grace au debug dans le terminal mais celui ci ne sera pas visible
+
+/////Chiffrement/////
+
+1/ Selon mes recherches urandom génère des nombre pseudo aléatoire.
+ etant donné qu'ils utilisent une valeur initiale pour generer ces nombres. 
+ si celle si ainsi que l'algorithme est connu il sera tres simple pour une 
+ personne mal intentionée de prédire la suite des nombres généré. 
+ il n'est donc pas un bon choix dans la cryptographie dont l'essence est l
+ a confidentialité sans faille. (C'est pour ca que pour le loto par exemple on se 
+ base sur des facteurs aleatoires integré ensuite dans l'algorythme pour 
+ les nombres aléatoires.(exemple dont j'ai fait part en cours))
+
+2/ Utiliser ses propres primitives peut etre dangereux pour plusieurs raisons. 
+Dans l'ecriture de l'algo de ces primitives on est exposés a des des ereurs 
+d'implementation qui peuvent exposer la securité du systeme. cest algorythmes 
+sont tres complexes et donc en ecrivant notre propre primitive on peut ne pas 
+voir des failles que des personnes malveillantes peuvent utiliser
+
+
+3/ Un serveur malveillant peut npus nuire encore meme avec le chiffrement car 
+certes il n'a pas acces a notre message avant chiffrement mais peut quand meme 
+y accedé apres le dechiffrement et donc utiliser cela pour recueuillir les données 
+qu'il veut et tromper l'utilisateur 
+
+4/comme vous l'avez dis dans les points d'attention on utilise un salt constant
+ qui veut dire que pour le meme mot de passe la cle apres la derivation sera la
+  meme donc pour moi comme dans la reponse 5 il en faudrait un aleatoire
+
+/////Authenticated Symetric Encryption/////
+
+1/ Vu que Fernet a ete concu par des professionels du milieu, tout a ete mis en 
+oeuvre pour eviter quelconque erreurs, en utilisant cette methodes on evites donc
+ les erreurs d'implementations.
+
+2/ Selon mes recherches, cette methode est appellee "replay attack"
+
+3/ Comme on peut l'imaginer avec la suite du tp je pense qu'en mettant en place
+ un systeme de delais pour le dechifrement des messages
+
+
+/////TTL/////
+
+1/ On remarque que le temps de 30 secondes fixé est tres importment car a partir 
+du moment ou le message est envoyé, il faut que le receveur le recupère avant que 
+le message ne soit supprimé si non il ne pourra pas le dechiffrer comme on l'a indiqué 
+dans le decrypt.
+
+2/ l'orsquon modifie le temps et q'uon fait -45 secondes, c'est comme si le message 
+est expiré meme avant sont envoi donc le receveur ne pourra pas le recupérer
+car on aura marqué dechiffrement echoué.
+
+3/ Oui c'est efficace pour eviter les attaques de notre methodes precedente. 
+Dans celle ci le message restait dechiffrable tout le temps. maintenant quon a mis ce delais, 
+le recepteur aura le temps de le dechiffrer et apres le temps qu'on a fixé ca ne sera plus
+possible donc on evite les attaques de replay 
